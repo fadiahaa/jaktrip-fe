@@ -38,7 +38,7 @@ function DetailWisata() {
   }
 
   const imageUrl = wisata.gambar
-    ? `http://127.0.0.1:8000/uploads/wisata/${wisata.gambar}`
+    ? `${import.meta.env.VITE_API_URL}/uploads/wisata/${wisata.gambar}`
     : null;
 
   return (

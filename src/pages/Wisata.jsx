@@ -14,6 +14,9 @@ function Wisata() {
     const fetchWisata = async () => {
       try {
         const response = await api.get("/wisata");
+
+        console.log("DATA DARI API:", response.data);
+
         setWisata(response.data);
       } catch (err) {
         console.error(err);

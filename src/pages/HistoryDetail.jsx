@@ -129,7 +129,7 @@ function HistoryDetail() {
               <div className="saved-number">{item.urutan}</div>
 
               <img
-                src={`http://127.0.0.1:8000/uploads/wisata/${item.gambar}`}
+                src={`${import.meta.env.VITE_API_URL}/uploads/wisata/${item.gambar}`}
                 alt={item.nama_wisata}
               />
 
@@ -139,11 +139,19 @@ function HistoryDetail() {
                 <h3>{item.nama_wisata}</h3>
 
                 <div className="saved-info">
-                  <span>💰 Rp {item.harga_min.toLocaleString("id-ID")}</span>
+                  <span>
+                    {item.harga_min === 0
+                      ? "💰 Gratis"
+                      : `💰 Rp ${item.harga_min.toLocaleString("id-ID")}`}
+                  </span>
 
                   <span>⏱ {item.estimasi_durasi} menit</span>
 
-                  <span>⭐ {item.rating}</span>
+                  <span>
+                    {item.rating > 0
+                      ? `⭐ ${item.rating}`
+                      : "⭐ Belum diketahui"}
+                  </span>
                 </div>
 
                 <p className="saved-address">📍 {item.alamat}</p>

@@ -103,7 +103,7 @@ function HasilPlanner() {
         ) : (
           <div className="itinerary-list">
             {itinerary.map((item, index) => {
-              const imageUrl = `http://127.0.0.1:8000/uploads/wisata/${getImageName(
+              const imageUrl = `${import.meta.env.VITE_API_URL}/uploads/wisata/${getImageName(
                 item.id_wisata,
               )}`;
 
