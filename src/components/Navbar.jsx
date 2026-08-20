@@ -1,78 +1,73 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
 function Navbar() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const { isLoggedIn, logout } = useAuth();
+
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    setMenuOpen(false);
-    navigate("/login");
-  };
 
-  const closeMenu = () => {
     setMenuOpen(false);
+
+    navigate("/");
   };
 
   return (
     <nav className="navbar">
-      <div className="navbar-container">
-        <Link to="/" className="navbar-logo" onClick={closeMenu}>
-          JakTrip
+      {/* LOGO */}
+      <Link to="/" className="navbar-logo" onClick={() => setMenuOpen(false)}>
+        JAKWIS
+      </Link>
+
+      {/* MOBILE MENU BUTTON */}
+      <button
+        className="menu-toggle"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Toggle navigation"
+      >
+        ☰
+      </button>
+
+      {/* NAVIGATION */}
+      <div className={`navbar-menu ${menuOpen ? "open" : ""}`}>
+        <Link to="/" onClick={() => setMenuOpen(false)}>
+          Beranda
         </Link>
 
-        <button
-          className="navbar-toggle"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle navigation"
-        >
-          ☰
-        </button>
+        <Link to="/recommendation" onClick={() => setMenuOpen(false)}>
+          Rekomendasi
+        </Link>
 
-        <div className={`navbar-menu ${menuOpen ? "active" : ""}`}>
-          <Link to="/" onClick={closeMenu}>
-            Home
+        {/* HANYA MUNCUL JIKA SUDAH LOGIN */}
+        {isLoggedIn && (
+          <Link to="/favorites" onClick={() => setMenuOpen(false)}>
+            ♡ Tersimpan
           </Link>
+        )}
 
-          <Link to="/wisata" onClick={closeMenu}>
-            Destinasi
+        {/* LOGIN / LOGOUT */}
+        {isLoggedIn ? (
+          <button
+            type="button"
+            className="logout-button"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        ) : (
+          <Link
+            className="login-button"
+            to="/login"
+            onClick={() => setMenuOpen(false)}
+          >
+            Login
           </Link>
-
-          <Link to="/planner" onClick={closeMenu}>
-            Travel Planner
-          </Link>
-
-          {user && (
-            <Link to="/history" onClick={closeMenu}>
-              Riwayat
-            </Link>
-          )}
-
-          {user ? (
-            <div className="navbar-user">
-              <span>{user.nama || user.email}</span>
-
-              <button onClick={handleLogout}>Logout</button>
-            </div>
-          ) : (
-            <div className="navbar-auth">
-              <Link to="/login" onClick={closeMenu}>
-                Login
-              </Link>
-
-              <Link
-                to="/register"
-                className="navbar-register"
-                onClick={closeMenu}
-              >
-                Register
-              </Link>
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </nav>
   );

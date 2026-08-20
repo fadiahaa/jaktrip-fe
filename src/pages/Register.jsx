@@ -1,139 +1,193 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../services/api";
 
 function Register() {
   const navigate = useNavigate();
 
-  const [nama, setNama] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    try {
-      setLoading(true);
-      setError("");
+    setError("");
+    setSuccess("");
 
-      await api.post("/auth/register", {
-        nama,
-        email,
-        password,
+    if (!username || !email || !password || !confirmPassword) {
+      setError("Semua field wajib diisi.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Konfirmasi password tidak sesuai.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password minimal 6 karakter.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+        }),
       });
 
-      navigate("/login");
-    } catch (err) {
-      console.error(err);
+      const data = await response.json();
 
-      const detail = err.response?.data?.detail;
+      if (!response.ok) {
+        throw new Error(data.detail || "Registrasi gagal.");
+      }
 
-      setError(
-        Array.isArray(detail) ? detail[0]?.msg : detail || "Registrasi gagal.",
-      );
+      setSuccess("Registrasi berhasil. Silakan login.");
+
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1200);
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="auth-page">
-      <section className="auth-brand">
-        <div className="auth-brand-content">
+    <div className="auth-page">
+      <div className="auth-container">
+        {/* LEFT */}
+
+        <div className="auth-intro">
           <Link to="/" className="auth-logo">
-            JakTrip
+            JAKWIS
           </Link>
 
-          <div>
-            <p className="auth-eyebrow">START YOUR JOURNEY</p>
+          <div className="auth-intro-content">
+            <p className="auth-label">MULAI PERJALANANMU</p>
 
             <h1>
-              Plan less,
+              Jelajahi Jakarta
               <br />
-              explore more.
+              dengan caramu.
             </h1>
 
             <p>
-              Buat akun JakTrip dan mulai susun perjalanan wisata Jakarta sesuai
-              kebutuhanmu.
+              Buat akun JAKWIS untuk mendapatkan rekomendasi wisata dan
+              menyimpan destinasi yang ingin kamu kunjungi.
             </p>
           </div>
-
-          <div className="auth-decoration">
-            <span>✦</span>
-            <span>✦</span>
-            <span>✦</span>
-          </div>
         </div>
-      </section>
 
-      <section className="auth-form-section">
-        <div className="auth-form-container">
-          <div className="auth-form-header">
-            <p>CREATE ACCOUNT</p>
-            <h2>Buat akun JakTrip</h2>
-            <span>
-              Daftar untuk menyimpan itinerary perjalanan dan mengakses riwayat
-              perjalananmu.
-            </span>
-          </div>
+        {/* RIGHT */}
 
-          <form onSubmit={handleSubmit} className="auth-form">
-            {error && <div className="auth-error">{error}</div>}
+        <div className="auth-form-wrapper">
+          <form className="auth-form" onSubmit={handleRegister}>
+            <div className="auth-form-header">
+              <h2>Buat Akun</h2>
+
+              <p>Daftar untuk mulai menggunakan JAKWIS.</p>
+            </div>
+
+            {/* USERNAME */}
 
             <div className="form-group">
-              <label htmlFor="nama">Nama</label>
+              <label htmlFor="username">Username</label>
 
               <input
-                id="nama"
+                id="username"
                 type="text"
-                placeholder="Nama lengkap"
-                value={nama}
-                onChange={(e) => setNama(e.target.value)}
-                required
+                placeholder="Masukkan username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
 
+            {/* EMAIL */}
+
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="register-email">Email</label>
 
               <input
-                id="email"
+                id="register-email"
                 type="email"
-                placeholder="nama@email.com"
+                placeholder="Masukkan email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
               />
             </div>
+
+            {/* PASSWORD */}
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="register-password">Password</label>
 
               <input
-                id="password"
+                id="register-password"
                 type="password"
-                placeholder="Buat password"
+                placeholder="Minimal 6 karakter"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
               />
             </div>
 
-            <button type="submit" className="auth-submit" disabled={loading}>
-              {loading ? "Membuat akun..." : "Daftar"}
-            </button>
-          </form>
+            {/* CONFIRM PASSWORD */}
 
-          <p className="auth-switch">
-            Sudah punya akun? <Link to="/login">Masuk sekarang</Link>
-          </p>
+            <div className="form-group">
+              <label htmlFor="confirm-password">Konfirmasi Password</label>
+
+              <input
+                id="confirm-password"
+                type="password"
+                placeholder="Masukkan ulang password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+
+            {/* ERROR */}
+
+            {error && <div className="auth-error">{error}</div>}
+
+            {/* SUCCESS */}
+
+            {success && <div className="auth-success">{success}</div>}
+
+            {/* BUTTON */}
+
+            <button type="submit" className="auth-submit" disabled={loading}>
+              {loading ? "Mendaftarkan..." : "Daftar"}
+            </button>
+
+            {/* LOGIN */}
+
+            <p className="auth-switch">
+              Sudah punya akun? <Link to="/login">Masuk sekarang</Link>
+            </p>
+          </form>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 }
 

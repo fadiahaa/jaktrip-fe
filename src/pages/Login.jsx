@@ -1,84 +1,93 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-
+import { useAuth } from "../contexts/AuthContext";
 function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    try {
-      setLoading(true);
-      setError("");
+    setError("");
 
-      await login(email, password);
+    if (!email || !password) {
+      setError("Email dan password wajib diisi.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || "Email atau password salah.");
+      }
+
+      login(data.access_token, data.user);
 
       navigate("/");
-    } catch (err) {
-      console.error(err);
-
-      const detail = err.response?.data?.detail;
-
-      setError(
-        Array.isArray(detail)
-          ? detail[0]?.msg
-          : detail || "Email atau password salah.",
-      );
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="auth-page">
-      <section className="auth-brand">
-        <div className="auth-brand-content">
+    <div className="auth-page">
+      <div className="auth-container">
+        {/* LEFT SIDE */}
+
+        <div className="auth-intro">
           <Link to="/" className="auth-logo">
-            JakTrip
+            JAKWIS
           </Link>
 
-          <div>
-            <p className="auth-eyebrow">TRAVEL PLANNER</p>
+          <div className="auth-intro-content">
+            <p className="auth-label">SELAMAT DATANG KEMBALI</p>
 
             <h1>
-              Your journey,
+              Temukan perjalanan
               <br />
-              your way.
+              wisata terbaikmu.
             </h1>
 
             <p>
-              Temukan destinasi menarik di Jakarta dan buat perjalanan yang
-              sesuai dengan preferensimu.
+              Masuk ke akun JAKWIS untuk menyimpan destinasi favorit dan
+              mendapatkan rekomendasi wisata yang sesuai denganmu.
             </p>
           </div>
-
-          <div className="auth-decoration">
-            <span>✦</span>
-            <span>✦</span>
-            <span>✦</span>
-          </div>
         </div>
-      </section>
 
-      <section className="auth-form-section">
-        <div className="auth-form-container">
-          <div className="auth-form-header">
-            <p>WELCOME BACK</p>
-            <h2>Masuk ke JakTrip</h2>
-            <span>
-              Masuk untuk menyimpan dan mengelola itinerary perjalananmu.
-            </span>
-          </div>
+        {/* RIGHT SIDE */}
 
-          <form onSubmit={handleSubmit} className="auth-form">
-            {error && <div className="auth-error">{error}</div>}
+        <div className="auth-form-wrapper">
+          <form className="auth-form" onSubmit={handleLogin}>
+            <div className="auth-form-header">
+              <h2>Masuk ke JAKWIS</h2>
+
+              <p>Silakan masuk menggunakan akunmu.</p>
+            </div>
+
+            {/* EMAIL */}
 
             <div className="form-group">
               <label htmlFor="email">Email</label>
@@ -86,12 +95,13 @@ function Login() {
               <input
                 id="email"
                 type="email"
-                placeholder="nama@email.com"
+                placeholder="Masukkan email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
               />
             </div>
+
+            {/* PASSWORD */}
 
             <div className="form-group">
               <label htmlFor="password">Password</label>
@@ -102,21 +112,28 @@ function Login() {
                 placeholder="Masukkan password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
               />
             </div>
+
+            {/* ERROR */}
+
+            {error && <div className="auth-error">{error}</div>}
+
+            {/* BUTTON */}
 
             <button type="submit" className="auth-submit" disabled={loading}>
               {loading ? "Memproses..." : "Masuk"}
             </button>
-          </form>
 
-          <p className="auth-switch">
-            Belum punya akun? <Link to="/register">Daftar sekarang</Link>
-          </p>
+            {/* REGISTER */}
+
+            <p className="auth-switch">
+              Belum punya akun? <Link to="/register">Daftar sekarang</Link>
+            </p>
+          </form>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 }
 

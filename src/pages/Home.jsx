@@ -1,78 +1,71 @@
-import { Link } from "react-router-dom";
-import Chatbot from "../components/Chatbot";
+import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import DestinationCard from "../components/DestinationCard";
+import { useNavigate } from "react-router-dom";
+
 function Home() {
+  const navigate = useNavigate();
+  const [destinations, setDestinations] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/destinations")
+      .then((response) => response.json())
+      .then((data) => {
+        setDestinations(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Gagal mengambil data:", error);
+        setLoading(false);
+      });
+  }, []);
+
   return (
-    <main className="home-page">
-      <section className="hero-section">
+    <div>
+      <Navbar />
+
+      <section className="hero">
         <div className="hero-content">
-          <p className="hero-label">JAKTRIP TRAVEL PLANNER</p>
+          <p className="hero-small">JELAJAHI JAKARTA</p>
 
           <h1>
-            Rencanakan Perjalananmu
+            Temukan destinasi
             <br />
-            di Jakarta
+            yang cocok untukmu.
           </h1>
 
-          <p className="hero-description">
-            Temukan destinasi wisata yang sesuai dengan preferensimu dan susun
-            itinerary perjalanan dengan lebih mudah.
+          <p>
+            Masukkan preferensi wisatamu dan temukan rekomendasi destinasi
+            Jakarta yang sesuai.
           </p>
 
-          <div className="hero-actions">
-            <Link to="/planner" className="hero-button">
-              Buat Itinerary
-            </Link>
-
-            <Link to="/wisata" className="hero-button-secondary">
-              Jelajahi Destinasi
-            </Link>
-          </div>
-        </div>
-
-        <div className="hero-decoration">
-          <div className="hero-circle">
-            <span>JKT</span>
-          </div>
+          <button onClick={() => navigate("/recommendation")}>
+            Cari Rekomendasi
+          </button>
         </div>
       </section>
 
-      <section className="home-features">
-        <div className="home-section-header">
-          <p>FITUR JAKTRIP</p>
-          <h2>Perjalanan lebih mudah</h2>
-        </div>
+      <section className="destinations-section">
+        <div className="section-header">
+          <div>
+            <p className="section-label">DESTINASI JAKARTA</p>
 
-        <div className="feature-grid">
-          <div className="feature-card">
-            <div className="feature-icon">01</div>
-            <h3>Rekomendasi Wisata</h3>
-            <p>
-              Dapatkan rekomendasi destinasi berdasarkan preferensi
-              perjalananmu.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon">02</div>
-            <h3>Travel Planner</h3>
-            <p>
-              Susun rencana perjalanan berdasarkan budget, durasi, dan jumlah
-              destinasi.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon">03</div>
-            <h3>AI Travel Assistant</h3>
-            <p>
-              Dapatkan bantuan informasi wisata melalui asisten perjalanan
-              berbasis AI.
-            </p>
+            <h2>Jelajahi berbagai destinasi</h2>
           </div>
         </div>
+
+        {loading ? (
+          <p>Memuat destinasi...</p>
+        ) : (
+          <div className="destination-grid">
+            {destinations.map((destination) => (
+              <DestinationCard key={destination.id} destination={destination} />
+            ))}
+          </div>
+        )}
       </section>
-      <Chatbot />
-    </main>
+    </div>
   );
 }
 

@@ -1,34 +1,23 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Wisata from "./pages/Wisata";
-import DetailWisata from "./pages/DetailWisata";
-import Planner from "./pages/Planner";
-import HasilPlanner from "./pages/HasilPlanner";
-import History from "./pages/History";
-import HistoryDetail from "./pages/HistoryDetail";
-import Navbar from "./components/Navbar";
+import Recommendation from "./pages/Recommendation";
+import Favorites from "./pages/Favorites";
+import DestinationDetail from "./pages/DestinationDetail";
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
-        <Route path="/wisata" element={<Wisata />} />
-        <Route path="/wisata/:id" element={<DetailWisata />} />
-
-        <Route path="/planner" element={<Planner />} />
-        <Route path="/planner/hasil" element={<HasilPlanner />} />
-
-        <Route path="/history" element={<History />} />
-        <Route path="/history/:id" element={<HistoryDetail />} />
+        <Route path="/recommendation" element={<Recommendation />} />
+        <Route path="/favorites" element={<Favorites />} />
+        <Route path="/destinations/:id" element={<DestinationDetail />} />
       </Routes>
     </BrowserRouter>
   );
