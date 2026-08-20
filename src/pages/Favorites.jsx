@@ -18,11 +18,14 @@ function Favorites() {
 
     const fetchFavorites = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/favorites", {
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/favorites`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
 
         const data = await response.json();
 

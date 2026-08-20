@@ -22,15 +22,18 @@ function Recommendation() {
     setSearched(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/recommend", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/recommend`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: query.trim(),
+          }),
         },
-        body: JSON.stringify({
-          query: query.trim(),
-        }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error("Gagal mendapatkan rekomendasi.");

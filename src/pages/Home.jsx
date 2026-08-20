@@ -9,7 +9,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/destinations")
+    fetch(`${import.meta.env.VITE_API_URL}/destinations`)
       .then((response) => response.json())
       .then((data) => {
         setDestinations(data);

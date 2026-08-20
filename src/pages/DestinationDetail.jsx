@@ -13,7 +13,7 @@ function DestinationDetail() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/destinations/${id}`)
+    fetch(`${import.meta.env.VITE_API_URL}/destinations/${id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Destinasi tidak ditemukan");
@@ -51,7 +51,7 @@ function DestinationDetail() {
     );
   }
 
-  const imageUrl = `http://127.0.0.1:8000${destination.image}`;
+  const imageUrl = `${import.meta.env.VITE_API_URL}${destination.image}`;
 
   return (
     <main className="destination-detail-page">

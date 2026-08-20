@@ -8,9 +8,11 @@ function DestinationCard({ destination }) {
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const baseUrl = import.meta.env.VITE_API_URL;
+
   const imageUrl = destination.image?.startsWith("/")
-    ? `http://127.0.0.1:8000${destination.image}`
-    : `http://127.0.0.1:8000/images/${destination.image}`;
+    ? `${baseUrl}${destination.image}`
+    : `${baseUrl}/images/${destination.image}`;
 
   // Cek apakah destinasi sudah tersimpan
   useEffect(() => {
@@ -21,11 +23,14 @@ function DestinationCard({ destination }) {
 
     const checkFavorite = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/favorites", {
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/favorites`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
 
         if (!response.ok) {
           return;
@@ -64,7 +69,7 @@ function DestinationCard({ destination }) {
 
       if (saved) {
         const response = await fetch(
-          `http://127.0.0.1:8000/favorites/${destination.id}`,
+          `${import.meta.env.VITE_API_URL}/favorites/${destination.id}`,
           {
             method: "DELETE",
             headers: {
@@ -86,16 +91,19 @@ function DestinationCard({ destination }) {
       // TAMBAH FAVORITE
       // =========================
       else {
-        const response = await fetch("http://127.0.0.1:8000/favorites", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/favorites`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              destination_id: destination.id,
+            }),
           },
-          body: JSON.stringify({
-            destination_id: destination.id,
-          }),
-        });
+        );
 
         const data = await response.json();
 
